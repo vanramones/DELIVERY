@@ -9,7 +9,7 @@ export default function ChapterNext({ cur }: { cur: number }) {
   const [boot, setBoot] = useState(true)
   const [target, setTarget] = useState(0)
   useEffect(() => {
-    const t = setTimeout(() => setBoot(false), 3000)
+    const t = setTimeout(() => setBoot(false), 2000)
     return () => clearTimeout(t)
   }, [])
   const last = cur === ids.length - 1
