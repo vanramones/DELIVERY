@@ -5,9 +5,9 @@ import { type Cross, type Freq, fmtP, labels, strength } from '../data/stats'
 
 export const COLORS = ['#ff7a1a', '#38bdf8', '#34d399', '#a78bfa', '#fb7185', '#fbbf24']
 
-export function Section({ id, chapter, title, sub, children }: { id: string; chapter: string; title: string; sub: string; children: ReactNode }) {
+export function Section({ id, chapter, title, sub, children, onScroll }: { id: string; chapter: string; title: string; sub: string; children: ReactNode; onScroll?: React.UIEventHandler<HTMLElement> }) {
   return (
-    <section id={id} className="mx-auto max-w-7xl px-5 py-20">
+    <section id={id} onScroll={onScroll} className="mx-auto h-screen max-w-7xl overflow-y-auto px-5 py-20 pr-16 md:pr-20">
       <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
         <div className="font-display text-sm tracking-[0.3em] text-brand">{chapter}</div>
         <h2 className="font-display mt-2 text-4xl font-bold md:text-5xl">{title}</h2>

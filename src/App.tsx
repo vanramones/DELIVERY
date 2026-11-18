@@ -1,6 +1,7 @@
+import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import ChapterNext from './components/ChapterNext'
+import ChapterNext, { CHAPTERS } from './components/ChapterNext'
 import { Bars3D, HeroScene } from './components/Three'
 import { Card, COLORS, CrossTable, Donut, HBars, InView, Insight, Section, Stacked, Stat } from './components/ui'
 import { N, ageStats, avgAgeBy, cross, fmtP, freq, labels, rows, strength, tests, yesRate, type CatKey } from './data/stats'
@@ -55,6 +56,13 @@ function SigTable({ target, list }: { target: string; list: ReturnType<typeof te
 }
 
 export default function App() {
+  const [cur, setCur] = useState(0)
+  const ref = useRef(0)
+  const sync = (e: React.UIEvent<HTMLElement>) => {
+    const i = Math.round(e.currentTarget.scrollTop / window.innerHeight)
+    if (i !== ref.current) { ref.current = i; setCur(i) }
+  }
+
   const sigOut = outTests.filter((c) => c.p < 0.05 && c.rowKey !== 'feedback').map((c) => labels[c.rowKey])
   const sigFb = fbTests.filter((c) => c.p < 0.05 && c.rowKey !== 'output').map((c) => labels[c.rowKey])
   const bestType = [...yesByType].sort((a, b) => b.rate - a.rate)[0]
@@ -63,16 +71,17 @@ export default function App() {
   const yesIfNeg = fbOut.table[1][0] / fbOut.rowTotals[1] * 100
 
   return (
-    <div className="relative overflow-x-hidden">
+    <div className="relative h-screen overflow-hidden">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_15%_10%,rgba(255,122,26,.18),transparent_40%),radial-gradient(circle_at_85%_30%,rgba(56,189,248,.14),transparent_40%)]" />
-      <ChapterNext />
+      <ChapterNext cur={cur} />
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/5 bg-ink/70 backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
           <div className="font-display text-lg font-bold"><span className="grad-text">OFD</span> Statistics</div>
+          <div className="rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs tracking-widest text-brand2">{CHAPTERS[cur].toUpperCase()}</div>
         </div>
       </nav>
 
-      <header id="hero" className="mx-auto grid min-h-screen max-w-7xl items-center gap-6 px-5 pt-24 lg:grid-cols-2">
+      <header id="hero" onScroll={sync} className="mx-auto grid h-screen max-w-7xl items-center gap-6 overflow-y-auto px-5 pb-8 pt-20 lg:grid-cols-2">
         <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
           <div className="mb-4 inline-block rounded-full border border-brand/40 bg-brand/10 px-4 py-1 text-xs tracking-widest text-brand2">A RESEARCH STUDY ON QUANTITATIVE METHODS</div>
           <h1 className="font-display text-5xl font-bold leading-tight md:text-7xl">Customer Behavior & Satisfaction in <span className="grad-text">Online Food Delivery</span></h1>
@@ -92,7 +101,7 @@ export default function App() {
         </div>
       </header>
 
-      <Section id="ch3" chapter="CHAPTER III" title="Methodology" sub="A structured survey collected responses from online food delivery users, capturing demographic profile, ordering behavior and satisfaction outcomes.">
+      <Section id="ch3" onScroll={sync} chapter="CHAPTER III" title="Methodology" sub="A structured survey collected responses from online food delivery users, capturing demographic profile, ordering behavior and satisfaction outcomes.">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
           <Stat value={String(N)} label="Respondents" sub="valid records, 0 missing" />
           <Stat value="8" label="Survey Variables" color="#38bdf8" sub="1 numeric · 7 categorical" />
@@ -147,7 +156,7 @@ export default function App() {
         </Card>
       </Section>
 
-      <Section id="ch4" chapter="CHAPTER IV" title="Presentation and Analysis of Data" sub="Findings, summaries and explanation of the data. All values are computed directly from the dataset.">
+      <Section id="ch4" onScroll={sync} chapter="CHAPTER IV" title="Presentation and Analysis of Data" sub="Findings, summaries and explanation of the data. All values are computed directly from the dataset.">
         <h3 className="font-display text-2xl font-bold">4.1 Age of Respondents</h3>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-6">
           <Stat value={ageStats.mean.toFixed(2)} label="Mean" />
@@ -247,7 +256,7 @@ export default function App() {
         <Insight>Reorder intent is significantly related to {sigOut.join(', ')} and to Feedback; it is not significantly related to {outTests.filter((c) => c.p >= 0.05).map((c) => labels[c.rowKey]).join(', ')}. Feedback is significantly related to {sigFb.join(', ')}; not to {fbTests.filter((c) => c.p >= 0.05).map((c) => labels[c.rowKey]).join(', ')}. Caution: some cells have expected counts below 5, so the tests on small groups (e.g., "Prefer not to say", Housewife) should be read with care.</Insight>
       </Section>
 
-      <Section id="ch5" chapter="CHAPTER V" title="Interpretation, Conclusion & Decision-Making" sub="What the statistics mean and what the business should do.">
+      <Section id="ch5" onScroll={sync} chapter="CHAPTER V" title="Interpretation, Conclusion & Decision-Making" sub="What the statistics mean and what the business should do.">
         <div className="grid gap-6 lg:grid-cols-2">
           <Card title="Interpretation of Findings">
             <ol className="space-y-4 text-sm text-slate-300">
