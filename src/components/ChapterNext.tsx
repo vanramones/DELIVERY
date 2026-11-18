@@ -69,8 +69,8 @@ export default function ChapterNext({ cur }: { cur: number }) {
         {boot && (
           <motion.div initial={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.6 } }} className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(255,122,26,.25),transparent_55%)]" />
-            <h2 className="font-display relative px-4 text-center text-4xl font-bold tracking-wide sm:text-5xl md:text-7xl"><span className="grad-text">Van.Dev</span></h2>
-            <p className="relative mt-3 text-sm tracking-[0.35em] text-slate-400">ONLINE FOOD DELIVERY</p>
+            <h2 className="font-display relative px-4 text-center text-3xl font-bold tracking-wide sm:text-4xl md:text-5xl"><span className="grad-text">Online Food Delivery</span></h2>
+            <p className="relative mt-3 text-sm tracking-[0.35em] text-slate-400">LOADING…</p>
             <div className="relative mt-8 h-1.5 w-56 overflow-hidden rounded-full bg-white/10 sm:w-64">
               <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 3, ease: 'linear' }} className="h-full bg-gradient-to-r from-brand to-brand2" />
             </div>
