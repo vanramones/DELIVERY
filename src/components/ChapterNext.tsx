@@ -20,7 +20,7 @@ export default function ChapterNext({ cur }: { cur: number }) {
     setTimeout(() => {
       document.getElementById(ids[target])!.scrollIntoView()
       setLoading(false)
-    }, 3000)
+    }, 2000)
   }
   const go = () => !last && goTo(cur + 1)
   const back = () => cur > 0 && goTo(cur - 1)
@@ -72,7 +72,7 @@ export default function ChapterNext({ cur }: { cur: number }) {
             <h2 className="font-display relative px-4 text-center text-3xl font-bold tracking-wide sm:text-4xl md:text-5xl"><span className="grad-text">Online Food Delivery</span></h2>
             <p className="relative mt-3 text-sm tracking-[0.35em] text-slate-400">LOADING…</p>
             <div className="relative mt-8 h-1.5 w-56 overflow-hidden rounded-full bg-white/10 sm:w-64">
-              <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 3, ease: 'linear' }} className="h-full bg-gradient-to-r from-brand to-brand2" />
+              <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 2, ease: 'linear' }} className="h-full bg-gradient-to-r from-brand to-brand2" />
             </div>
           </motion.div>
         )}
@@ -84,7 +84,7 @@ export default function ChapterNext({ cur }: { cur: number }) {
             <h2 className="font-display relative px-4 text-center text-2xl font-bold tracking-wide sm:text-3xl md:text-5xl"><span className="grad-text">Online Food Delivery</span></h2>
             <p className="relative mt-3 text-sm tracking-widest text-slate-400">LOADING {CHAPTERS[target].toUpperCase()}…</p>
             <div className="relative mt-8 h-1.5 w-56 sm:w-64 overflow-hidden rounded-full bg-white/10">
-              <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 3, ease: 'linear' }} className="h-full bg-gradient-to-r from-brand to-brand2" />
+              <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 2, ease: 'linear' }} className="h-full bg-gradient-to-r from-brand to-brand2" />
             </div>
           </motion.div>
         )}
