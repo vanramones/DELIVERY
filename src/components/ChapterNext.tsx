@@ -6,10 +6,15 @@ export const CHAPTERS = ['Home', 'Chapter III', 'Chapter IV', 'Chapter V']
 
 export default function ChapterNext({ cur }: { cur: number }) {
   const [loading, setLoading] = useState(false)
+  const [boot, setBoot] = useState(true)
   const [target, setTarget] = useState(0)
+  useEffect(() => {
+    const t = setTimeout(() => setBoot(false), 3000)
+    return () => clearTimeout(t)
+  }, [])
   const last = cur === ids.length - 1
   const goTo = (target: number) => {
-    if (loading || target === cur) return
+    if (loading || boot || target === cur) return
     setTarget(target)
     setLoading(true)
     setTimeout(() => {
@@ -19,6 +24,7 @@ export default function ChapterNext({ cur }: { cur: number }) {
   }
   const go = () => !last && goTo(cur + 1)
   useEffect(() => {
+    if (boot) return
     const h = (e: Event) => goTo((e as CustomEvent<number>).detail)
     window.addEventListener('ofd-go', h)
     return () => window.removeEventListener('ofd-go', h)
@@ -43,6 +49,19 @@ export default function ChapterNext({ cur }: { cur: number }) {
         )}
       </AnimatePresence>
 
+
+      <AnimatePresence>
+        {boot && (
+          <motion.div initial={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.6 } }} className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(255,122,26,.25),transparent_55%)]" />
+            <h2 className="font-display relative px-4 text-center text-4xl font-bold tracking-wide sm:text-5xl md:text-7xl"><span className="grad-text">Van.Dev</span></h2>
+            <p className="relative mt-3 text-sm tracking-[0.35em] text-slate-400">ONLINE FOOD DELIVERY</p>
+            <div className="relative mt-8 h-1.5 w-56 overflow-hidden rounded-full bg-white/10 sm:w-64">
+              <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 3, ease: 'linear' }} className="h-full bg-gradient-to-r from-brand to-brand2" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink">
