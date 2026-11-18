@@ -168,7 +168,7 @@ export default function App() {
         </Card>
       </Section>
 
-      <Section id="ch4" chapter="CHAPTER IV" title="Presentation and Analysis of Data" sub="Findings, summaries and explanation of the data. All values are computed directly from the dataset.">
+      <Section id="ch4" chapter="CHAPTER IV" title="Analysis of Data" sub="Findings, summaries and explanation of the data. All values are computed directly from the dataset.">
         <h3 className="font-display text-2xl font-bold">4.1 Age of Respondents</h3>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-6">
           <Stat value={ageStats.mean.toFixed(2)} label="Mean" />
