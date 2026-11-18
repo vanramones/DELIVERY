@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import CustomCursor from './components/CustomCursor'
 import ChapterNext, { CHAPTERS } from './components/ChapterNext'
 import { Bars3D, HeroScene } from './components/Three'
@@ -180,16 +179,9 @@ export default function App() {
         </div>
         <div className="grid gap-6 lg:grid-cols-3">
           <Card title="Age Distribution" className="lg:col-span-2">
-            <div className="h-72">
-              <ResponsiveContainer>
-                <BarChart data={ageStats.distribution}>
-                  <CartesianGrid stroke="#1e2640" vertical={false} />
-                  <XAxis dataKey="age" stroke="#94a3b8" /><YAxis stroke="#64748b" />
-                  <Tooltip contentStyle={{ background: '#0e1424', border: '1px solid #26304d', borderRadius: 12 }} cursor={{ fill: 'rgba(255,255,255,.05)' }} />
-                  <Bar dataKey="count" name="Respondents" radius={[6, 6, 0, 0]}>{ageStats.distribution.map((d, i) => <Cell key={i} fill={d.age === String(ageStats.mode) ? '#ff7a1a' : '#38bdf8'} />)}</Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <InView className="h-[360px]">
+              <Bars3D cats={ageStats.distribution.map((d) => d.age)} series={[{ name: 'Respondents', color: '#38bdf8', values: ageStats.distribution.map((d) => d.count) }]} colors={ageStats.distribution.map((d) => (d.age === String(ageStats.mode) ? '#ff7a1a' : '#38bdf8'))} height={360} />
+            </InView>
           </Card>
           <Card title="Age Groups">
             <table className="w-full text-sm">
@@ -228,11 +220,10 @@ export default function App() {
         </div>
 
         <h3 className="font-display pt-6 text-2xl font-bold">4.5 Reorder Intent by Customer Type (3D)</h3>
-        <Card title="Yes-rate and Positive-feedback rate by segment" note="Move your mouse over the chart to rotate it. Values are percentages within each customer type.">
-          <InView className="h-[320px] sm:h-[420px]">
-            <Bars3D cats={yesByType.map((d) => `${d.name} (n=${d.n})`)} unit="%" series={[{ name: 'Will reorder', color: '#ff7a1a', values: yesByType.map((d) => d.rate) }, { name: 'Positive feedback', color: '#38bdf8', values: posByType.map((d) => d.rate) }]} />
+        <Card title="Yes-rate and Positive-feedback rate by segment" note="All charts are 3D — move your mouse over a chart to rotate it. Values are percentages within each customer type.">
+          <InView className="h-[410px]">
+            <Bars3D cats={yesByType.map((d) => `${d.name} (n=${d.n})`)} unit="%" series={[{ name: 'Will reorder', color: '#ff7a1a', values: yesByType.map((d) => d.rate) }, { name: 'Positive feedback', color: '#38bdf8', values: posByType.map((d) => d.rate) }]} height={380} />
           </InView>
-          <div className="mt-2 flex gap-5 text-sm"><span><i className="mr-2 inline-block h-3 w-3 rounded bg-brand" />Will reorder</span><span><i className="mr-2 inline-block h-3 w-3 rounded bg-sky" />Positive feedback</span></div>
         </Card>
         <div className="grid gap-6 lg:grid-cols-2">
           <Card title="Output (Yes/No) by Customer Type"><CrossTable c={ctOut} /></Card>

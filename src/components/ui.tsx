@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
-import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Bars3D, Pie3D } from './Three'
 import { type Cross, type Freq, fmtP, labels, strength } from '../data/stats'
 
 export const COLORS = ['#ff7a1a', '#38bdf8', '#34d399', '#a78bfa', '#fb7185', '#fbbf24']
@@ -29,12 +29,22 @@ export function Card({ title, note, children, className = '' }: { title?: string
 }
 
 export function Stat({ value, label, color = '#ff7a1a', sub }: { value: string; label: string; color?: string; sub?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const move = (e: React.PointerEvent) => {
+    const r = ref.current!.getBoundingClientRect()
+    const x = (e.clientX - r.left) / r.width - 0.5
+    const y = (e.clientY - r.top) / r.height - 0.5
+    ref.current!.style.transform = `perspective(700px) rotateY(${x * 22}deg) rotateX(${-y * 22}deg) translateZ(14px)`
+  }
+  const leave = () => (ref.current!.style.transform = 'perspective(700px) rotateY(0) rotateX(0) translateZ(0)')
   return (
-    <motion.div whileHover={{ y: -4 }} className="glass relative overflow-hidden p-5">
-      <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-25 blur-2xl" style={{ background: color }} />
-      <div className="font-display text-4xl font-bold" style={{ color }}>{value}</div>
-      <div className="mt-1 text-sm font-medium text-slate-200">{label}</div>
-      {sub && <div className="text-xs text-slate-500">{sub}</div>}
+    <motion.div initial={{ opacity: 0, rotateX: -60, y: 30 }} whileInView={{ opacity: 1, rotateX: 0, y: 0 }} viewport={{ once: true }} transition={{ type: 'spring', stiffness: 80 }} style={{ perspective: 800 }}>
+      <div ref={ref} onPointerMove={move} onPointerLeave={leave} className="glass relative overflow-hidden p-5 transition-transform duration-200 ease-out" style={{ transformStyle: 'preserve-3d', boxShadow: `0 18px 40px -22px ${color}` }}>
+        <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-25 blur-2xl" style={{ background: color }} />
+        <div className="font-display text-4xl font-bold" style={{ color, transform: 'translateZ(30px)', textShadow: `0 6px 18px ${color}66` }}>{value}</div>
+        <div className="mt-1 text-sm font-medium text-slate-200" style={{ transform: 'translateZ(16px)' }}>{label}</div>
+        {sub && <div className="text-xs text-slate-500" style={{ transform: 'translateZ(8px)' }}>{sub}</div>}
+      </div>
     </motion.div>
   )
 }
@@ -47,21 +57,12 @@ export function Insight({ children }: { children: ReactNode }) {
   )
 }
 
-const tip = { contentStyle: { background: '#0e1424', border: '1px solid #26304d', borderRadius: 12, color: '#fff' }, itemStyle: { color: '#fff' } }
-
-export function Donut({ data }: { data: Freq[] }) {
+export function Donut({ data, center }: { data: Freq[]; center?: string }) {
   return (
     <div>
-      <div className="h-56">
-        <ResponsiveContainer>
-          <PieChart>
-            <Pie data={data} dataKey="count" nameKey="name" innerRadius="58%" outerRadius="90%" paddingAngle={3} stroke="none">
-              {data.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-            </Pie>
-            <Tooltip {...tip} formatter={(v) => [`${v}`, 'Respondents']} />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+      <InView className="h-[280px]">
+        <Pie3D data={data.map((d) => ({ name: d.name, value: d.count, pct: d.pct }))} colors={COLORS} center={center ?? String(data.reduce((a, b) => a + b.count, 0))} />
+      </InView>
       <FreqTable data={data} />
     </div>
   )
@@ -89,37 +90,20 @@ export function FreqTable({ data }: { data: Freq[] }) {
 export function HBars({ data }: { data: Freq[] }) {
   return (
     <div>
-      <div className="h-64">
-        <ResponsiveContainer>
-          <BarChart data={data} layout="vertical" margin={{ left: 20, right: 20 }}>
-            <CartesianGrid stroke="#1e2640" horizontal={false} />
-            <XAxis type="number" stroke="#64748b" />
-            <YAxis type="category" dataKey="name" stroke="#94a3b8" width={110} tick={{ fontSize: 12 }} />
-            <Tooltip {...tip} cursor={{ fill: 'rgba(255,255,255,.05)' }} />
-            <Bar dataKey="count" radius={[0, 8, 8, 0]}>{data.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}</Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <InView className="h-[340px]">
+        <Bars3D cats={data.map((d) => d.name)} series={[{ name: 'Respondents', color: COLORS[0], values: data.map((d) => d.count) }]} colors={COLORS} height={340} />
+      </InView>
       <FreqTable data={data} />
     </div>
   )
 }
 
-export function Stacked({ c, height = 260 }: { c: Cross; height?: number }) {
-  const data = c.rowCats.map((r, i) => ({ name: r, ...Object.fromEntries(c.colCats.map((k, j) => [k, +((c.table[i][j] / c.rowTotals[i]) * 100).toFixed(1)])) }))
+export function Stacked({ c, height = 340 }: { c: Cross; height?: number }) {
+  const series = c.colCats.map((k, j) => ({ name: k, color: j === 0 ? '#34d399' : '#fb7185', values: c.rowCats.map((_, i) => +((c.table[i][j] / c.rowTotals[i]) * 100).toFixed(1)) }))
   return (
-    <div style={{ height }}>
-      <ResponsiveContainer>
-        <BarChart data={data} margin={{ left: -10 }}>
-          <CartesianGrid stroke="#1e2640" vertical={false} />
-          <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 10 }} interval={0} angle={c.rowCats.length > 3 ? -25 : 0} textAnchor={c.rowCats.length > 3 ? 'end' : 'middle'} height={c.rowCats.length > 3 ? 60 : 30} />
-          <YAxis stroke="#64748b" unit="%" domain={[0, 100]} />
-          <Tooltip {...tip} formatter={(v) => `${v}%`} cursor={{ fill: 'rgba(255,255,255,.05)' }} />
-          <Legend />
-          {c.colCats.map((k, j) => <Bar key={k} dataKey={k} stackId="a" fill={j === 0 ? '#34d399' : '#fb7185'} radius={j === c.colCats.length - 1 ? [6, 6, 0, 0] : 0} />)}
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+    <InView className="mb-2" style={{ height: height + 28 }}>
+      <Bars3D cats={c.rowCats} series={series} unit="%" stacked height={height} />
+    </InView>
   )
 }
 
@@ -158,13 +142,13 @@ export function CrossTable({ c }: { c: Cross }) {
   )
 }
 
-export function InView({ children, className }: { children: ReactNode; className?: string }) {
+export function InView({ children, className, style }: { children: ReactNode; className?: string; style?: React.CSSProperties }) {
   const ref = useRef<HTMLDivElement>(null)
   const [on, setOn] = useState(false)
   useEffect(() => {
-    const io = new IntersectionObserver(([e]) => setOn(e.isIntersecting), { threshold: 0.3 })
+    const io = new IntersectionObserver(([e]) => setOn(e.isIntersecting), { threshold: 0.15 })
     io.observe(ref.current!)
     return () => io.disconnect()
   }, [])
-  return <div ref={ref} className={className}>{on && children}</div>
+  return <div ref={ref} className={className} style={style}>{on && children}</div>
 }

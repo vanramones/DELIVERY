@@ -12,8 +12,8 @@ function useScene(build: (s: { scene: THREE.Scene; camera: THREE.PerspectiveCame
     el.appendChild(renderer.domElement)
     const fns: ((t: number, m: { x: number; y: number }) => void)[] = []
     const mouse = { x: 0, y: 0 }
-    scene.add(new THREE.AmbientLight(0xffffff, 0.8))
-    const dl = new THREE.DirectionalLight(0xffffff, 2.2)
+    scene.add(new THREE.AmbientLight(0xffffff, 1.3))
+    const dl = new THREE.DirectionalLight(0xffffff, 2.6)
     dl.position.set(5, 8, 6)
     scene.add(dl)
     build({ scene, camera, tick: (f) => fns.push(f) })
@@ -21,7 +21,8 @@ function useScene(build: (s: { scene: THREE.Scene; camera: THREE.PerspectiveCame
       const { clientWidth: w, clientHeight: h } = el
       renderer.setSize(w, h)
       camera.aspect = w / h
-      camera.zoom = Math.min(1, camera.aspect / 1.4)
+      const fw = camera.userData.fitW as number | undefined
+      camera.zoom = fw ? Math.min(1.1, (camera.aspect * 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.length()) / fw) : Math.min(1, camera.aspect / 1.4)
       camera.updateProjectionMatrix()
     }
     resize()
@@ -52,6 +53,7 @@ function useScene(build: (s: { scene: THREE.Scene; camera: THREE.PerspectiveCame
         ;[mat].flat().forEach((x) => x?.dispose())
       })
       renderer.dispose()
+      renderer.forceContextLoss()
       renderer.domElement.remove()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,18 +61,26 @@ function useScene(build: (s: { scene: THREE.Scene; camera: THREE.PerspectiveCame
   return ref
 }
 
-function label(text: string, color = '#cbd5e1', size = 56) {
+function label(text: string, color = '#cbd5e1', h = 0.4, maxW = 99) {
   const c = document.createElement('canvas')
-  c.width = 512
-  c.height = 128
   const g = c.getContext('2d')!
-  g.font = `600 ${size}px Inter, sans-serif`
+  const f = '700 64px Inter, sans-serif'
+  g.font = f
+  const w = Math.ceil(g.measureText(text).width) + 24
+  c.width = w
+  c.height = 96
+  g.font = f
   g.fillStyle = color
   g.textAlign = 'center'
   g.textBaseline = 'middle'
-  g.fillText(text, 256, 64)
+  g.shadowColor = 'rgba(0,0,0,.8)'
+  g.shadowBlur = 8
+  g.fillText(text, w / 2, 50)
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }))
-  s.scale.set(2.4, 0.6, 1)
+  let sw = (h * w) / 96, sh = h * 1.0
+  if (sw > maxW) { sh *= maxW / sw; sw = maxW }
+  s.scale.set(sw, sh * (96 / 96), 1)
+  s.renderOrder = 10
   return s
 }
 
@@ -117,46 +127,126 @@ export function HeroScene({ data }: { data: { value: number; color: string }[] }
 
 export interface Series { name: string; color: string; values: number[] }
 
-export function Bars3D({ cats, series, unit = '' }: { cats: string[]; series: Series[]; unit?: string }) {
+export function Bars3D({ cats, series, unit = '', stacked = false, colors, height = 360 }: { cats: string[]; series: Series[]; unit?: string; stacked?: boolean; colors?: string[]; height?: number }) {
   const ref = useScene(({ scene, camera, tick }) => {
-    camera.position.set(0, 5, 11)
-    camera.lookAt(0, 1.2, 0)
+    const n = cats.length
+    const gap = Math.min(2.4, 20 / n)
+    const W = n * gap
+    camera.position.set(0, 4.6, Math.max(12, W * 0.5 + 3))
+    camera.lookAt(0, 1.7, 0)
+    camera.userData.fitW = W + 2.4
     const g = new THREE.Group()
     scene.add(g)
-    const max = Math.max(...series.flatMap((s) => s.values))
-    const gap = 2.4, bw = 0.7
-    const grid = new THREE.GridHelper(cats.length * gap + 2, cats.length * 4, 0x334155, 0x1e293b)
-    g.add(grid)
-    const bars: THREE.Mesh[] = []
+    const maxV = stacked ? 100 : Math.max(...series.flatMap((s) => s.values))
+    const H = 4.5
+    const cluster = gap * 0.72
+    const bw = stacked ? cluster : cluster / series.length
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(W + 1.5, 0.12, 3.2), new THREE.MeshStandardMaterial({ color: '#111a30', roughness: 0.6 }))
+    floor.position.y = -0.07
+    g.add(floor)
+    g.add(new THREE.GridHelper(W + 1.5, n * 2, 0x2b3a5e, 0x1a2540))
+    const items: { m: THREE.Object3D; y0: number; h: number; delay: number; kind: 'bar' | 'label' }[] = []
     cats.forEach((c, i) => {
-      const x = (i - (cats.length - 1) / 2) * gap
-      const lab = label(c, '#cbd5e1', 46)
-      lab.position.set(x, -0.1, 1.6)
+      const x = (i - (n - 1) / 2) * gap
+      const lab = label(c, '#cbd5e1', 0.42, gap * 0.98)
+      lab.position.set(x, -0.35, 1.75)
       g.add(lab)
+      let acc = 0
       series.forEach((s, j) => {
-        const h = Math.max((s.values[i] / max) * 4.5, 0.02)
-        const m = new THREE.Mesh(new THREE.BoxGeometry(bw, 1, bw), new THREE.MeshStandardMaterial({ color: s.color, roughness: 0.25, metalness: 0.3 }))
-        m.position.set(x + (j - (series.length - 1) / 2) * (bw + 0.1), 0, 0)
-        m.userData = { h, delay: i * 0.12 + j * 0.06 }
+        const v = s.values[i]
+        const h = Math.max((v / maxV) * H, 0.03)
+        const y0 = stacked ? acc : 0
+        const col = colors && series.length === 1 ? colors[i % colors.length] : s.color
+        const m = new THREE.Mesh(new THREE.BoxGeometry(bw * (stacked ? 1 : 0.9), 1, bw * (stacked ? 1 : 0.9)), new THREE.MeshStandardMaterial({ color: col, roughness: 0.25, metalness: 0.35 }))
+        m.position.x = stacked ? x : x + (j - (series.length - 1) / 2) * bw
+        items.push({ m, y0, h, delay: i * 0.1 + j * 0.05, kind: 'bar' })
         g.add(m)
-        bars.push(m)
-        const v = label(s.values[i].toFixed(unit === '%' ? 1 : 0) + unit, '#ffffff', 52)
-        v.scale.set(1.5, 0.375, 1)
-        v.position.set(m.position.x, h + 0.35, 0)
-        v.userData = { h }
-        g.add(v)
+        const showLabel = !stacked || v >= 7
+        if (showLabel) {
+          const txt = (unit === '%' ? v.toFixed(1) : String(Math.round(v * 10) / 10)) + unit
+          const l = label(txt, '#ffffff', stacked ? 0.42 : 0.4, Math.max(bw * 1.4, 0.7))
+          l.position.x = m.position.x
+          l.position.z = stacked ? 0 : bw * 0.5
+          items.push({ m: l, y0: stacked ? y0 + h / 2 - 0.02 : y0 + h + 0.3, h: 0, delay: i * 0.1 + j * 0.05, kind: 'label' })
+          g.add(l)
+        }
+        acc += h
       })
     })
     tick((t, m) => {
-      g.rotation.y = Math.sin(t * 0.3) * 0.25 + m.x * 0.5
-      g.rotation.x = m.y * 0.12
-      bars.forEach((b) => {
-        const k = Math.min(Math.max((t - b.userData.delay) / 1.2, 0), 1)
+      g.rotation.y = Math.sin(t * 0.35) * 0.22 + m.x * 0.5
+      g.rotation.x = m.y * 0.1
+      items.forEach((it) => {
+        const k = Math.min(Math.max((t - it.delay) / 1.1, 0), 1)
         const e = 1 - Math.pow(1 - k, 3)
-        b.scale.y = Math.max(b.userData.h * e, 0.001)
-        b.position.y = b.scale.y / 2
+        if (it.kind === 'bar') {
+          it.m.scale.y = Math.max(it.h * e, 0.001)
+          it.m.position.y = it.y0 * e + (it.h * e) / 2
+        } else {
+          it.m.position.y = it.y0 * e
+          ;(it.m as THREE.Sprite).material.opacity = e
+        }
       })
     })
-  }, [cats.join(), JSON.stringify(series)])
-  return <div ref={ref} className="h-full w-full [touch-action:pan-y]" />
+  }, [cats.join(), JSON.stringify(series), stacked, colors?.join()])
+  return (
+    <div>
+      <div ref={ref} className="w-full [touch-action:pan-y]" style={{ height }} />
+      {series.length > 1 && (
+        <div className="mt-1 flex flex-wrap justify-center gap-4 text-xs text-slate-300">
+          {series.map((s) => <span key={s.name}><i className="mr-1.5 inline-block h-3 w-3 rounded-sm align-middle" style={{ background: s.color }} />{s.name}</span>)}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function Pie3D({ data, colors, center, height = 280 }: { data: { name: string; value: number; pct: number }[]; colors: string[]; center?: string; height?: number }) {
+  const ref = useScene(({ scene, camera, tick }) => {
+    camera.position.set(0, 5.4, 5.2)
+    camera.lookAt(0, 0, 0)
+    camera.userData.fitW = 8.6
+    const g = new THREE.Group()
+    scene.add(g)
+    const total = data.reduce((a, b) => a + b.value, 0)
+    const R = 2.3, r = 1.15
+    let a0 = Math.PI / 2
+    const slices: { mesh: THREE.Mesh; mid: number; lab?: THREE.Sprite }[] = []
+    data.forEach((d, i) => {
+      const len = (d.value / total) * Math.PI * 2
+      const a1 = a0 - len
+      const gapA = Math.min(0.03, len / 4)
+      const s = new THREE.Shape()
+      s.absarc(0, 0, R, a1 + gapA, a0 - gapA, false)
+      s.absarc(0, 0, r, a0 - gapA, a1 + gapA, true)
+      s.closePath()
+      const geo = new THREE.ExtrudeGeometry(s, { depth: 0.75, bevelEnabled: true, bevelSize: 0.05, bevelThickness: 0.05, bevelSegments: 2, curveSegments: 40 })
+      geo.rotateX(-Math.PI / 2)
+      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: colors[i % colors.length], roughness: 0.28, metalness: 0.3 }))
+      g.add(mesh)
+      const mid = (a0 + a1) / 2
+      const lab = label(d.pct.toFixed(1) + '%', '#ffffff', 0.55, 2)
+      lab.position.set(Math.cos(mid) * (R + 0.75), 0.9, -Math.sin(mid) * (R + 0.75))
+      g.add(lab)
+      slices.push({ mesh, mid })
+      a0 = a1
+    })
+    if (center) {
+      const c = label(center, '#ffb347', 0.7, 1.9)
+      c.position.set(0, 0.95, 0)
+      g.add(c)
+    }
+    tick((t, m) => {
+      g.rotation.y = t * 0.3 + m.x * 0.6
+      g.rotation.x = m.y * 0.15
+      const e = 1 - Math.pow(1 - Math.min(t / 1.1, 1), 3)
+      slices.forEach((s, i) => {
+        const k = Math.min(Math.max((t - i * 0.12) / 0.9, 0), 1)
+        const ee = 1 - Math.pow(1 - k, 3)
+        s.mesh.scale.set(1, Math.max(ee, 0.01), 1)
+      })
+      g.scale.setScalar(0.6 + 0.4 * e)
+    })
+  }, [JSON.stringify(data), colors.join(), center])
+  return <div ref={ref} className="w-full [touch-action:pan-y]" style={{ height }} />
 }
