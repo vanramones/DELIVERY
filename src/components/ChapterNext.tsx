@@ -23,6 +23,7 @@ export default function ChapterNext({ cur }: { cur: number }) {
     }, 3000)
   }
   const go = () => !last && goTo(cur + 1)
+  const back = () => cur > 0 && goTo(cur - 1)
   useEffect(() => {
     if (boot) return
     const h = (e: Event) => goTo((e as CustomEvent<number>).detail)
@@ -33,8 +34,22 @@ export default function ChapterNext({ cur }: { cur: number }) {
   return (
     <>
       <AnimatePresence>
+        {cur > 0 && (
+<motion.button key="prev"
+            onClick={back}
+            exit={{ opacity: 0, x: -30 }}
+            whileHover={{ scale: loading ? 1 : 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            animate={{ x: [0, -8, 0] }}
+            transition={{ x: { repeat: Infinity, duration: 1.6, ease: 'easeInOut' } }}
+            aria-label={`Back to ${CHAPTERS[cur - 1]}`}
+            className={`arrow-pulse fixed left-2 top-1/2 z-40 flex h-11 w-11 -translate-y-1/2 items-center md:left-5 md:h-14 md:w-14 md:justify-center rounded-full bg-gradient-to-b from-brand to-brand2 text-black shadow-[0_0_28px_6px_rgba(255,122,26,.55)] ring-2 ring-white/30 ${loading ? 'opacity-40' : ''}`}
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6l-6 6 6 6" /><path d="M11 6l-6 6 6 6" /></svg>
+          </motion.button>
+        )}
         {!last && (
-          <motion.button
+          <motion.button key="next"
             onClick={go}
             exit={{ opacity: 0, x: 30 }}
             whileHover={{ scale: loading ? 1 : 1.15 }}
