@@ -96,7 +96,7 @@ export default function App() {
         <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
           <div className="mb-4 inline-block rounded-full border border-brand/40 bg-brand/10 px-4 py-1 text-xs tracking-widest text-brand2">A RESEARCH STUDY ON QUANTITATIVE METHODS</div>
           <h1 className="font-display text-4xl font-bold leading-tight sm:text-5xl md:text-7xl">Customer Behavior & Satisfaction in <span className="grad-text">Online Food Delivery</span></h1>
-          <p className="mt-6 max-w-xl text-slate-400">In fulfillment of the requirements in MCO. Statistical analysis of {N} respondents and {Object.keys(labels).length} variables — Methodology, Presentation & Analysis of Data, and Interpretation.</p>
+          <p className="mt-6 max-w-xl text-slate-400">A quantitative research study uncovering what drives customer satisfaction and repeat orders in online food delivery — powered by real data.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#ch3" className="rounded-full bg-gradient-to-r from-brand to-brand2 px-6 py-3 font-semibold text-black shadow-lg shadow-brand/30 transition hover:scale-105">Start with Chapter III</a>
             <a href="#ch4" className="glass rounded-full px-6 py-3 font-semibold">Jump to Results</a>
