@@ -7,10 +7,10 @@ export const COLORS = ['#ff7a1a', '#38bdf8', '#34d399', '#a78bfa', '#fb7185', '#
 
 export function Section({ id, chapter, title, sub, children, onScroll }: { id: string; chapter: string; title: string; sub: string; children: ReactNode; onScroll?: React.UIEventHandler<HTMLElement> }) {
   return (
-    <section id={id} onScroll={onScroll} className="mx-auto h-screen max-w-7xl overflow-y-auto px-5 py-20 pr-16 md:pr-20">
+    <section id={id} onScroll={onScroll} className="mx-auto h-dvh max-w-7xl overflow-y-auto px-4 pb-28 pt-20 sm:px-5 md:pr-24 md:pb-20">
       <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
         <div className="font-display text-sm tracking-[0.3em] text-brand">{chapter}</div>
-        <h2 className="font-display mt-2 text-4xl font-bold md:text-5xl">{title}</h2>
+        <h2 className="font-display mt-2 text-3xl font-bold sm:text-4xl md:text-5xl">{title}</h2>
         <p className="mt-3 max-w-3xl text-slate-400">{sub}</p>
       </motion.div>
       <div className="space-y-6">{children}</div>
@@ -20,7 +20,7 @@ export function Section({ id, chapter, title, sub, children, onScroll }: { id: s
 
 export function Card({ title, note, children, className = '' }: { title?: string; note?: string; children: ReactNode; className?: string }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-40px' }} className={`glass p-6 ${className}`}>
+    <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-40px' }} className={`glass min-w-0 p-4 sm:p-6 ${className}`}>
       {title && <h3 className="font-display mb-1 text-lg font-bold text-white">{title}</h3>}
       {note && <p className="mb-4 text-sm text-slate-400">{note}</p>}
       {children}
@@ -112,7 +112,7 @@ export function Stacked({ c, height = 260 }: { c: Cross; height?: number }) {
       <ResponsiveContainer>
         <BarChart data={data} margin={{ left: -10 }}>
           <CartesianGrid stroke="#1e2640" vertical={false} />
-          <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 11 }} interval={0} />
+          <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 10 }} interval={0} angle={c.rowCats.length > 3 ? -25 : 0} textAnchor={c.rowCats.length > 3 ? 'end' : 'middle'} height={c.rowCats.length > 3 ? 60 : 30} />
           <YAxis stroke="#64748b" unit="%" domain={[0, 100]} />
           <Tooltip {...tip} formatter={(v) => `${v}%`} cursor={{ fill: 'rgba(255,255,255,.05)' }} />
           <Legend />

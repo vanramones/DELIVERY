@@ -71,20 +71,20 @@ export default function App() {
   const yesIfNeg = fbOut.table[1][0] / fbOut.rowTotals[1] * 100
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="relative h-dvh overflow-hidden">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_15%_10%,rgba(255,122,26,.18),transparent_40%),radial-gradient(circle_at_85%_30%,rgba(56,189,248,.14),transparent_40%)]" />
       <ChapterNext cur={cur} />
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/5 bg-ink/70 backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
           <div className="font-display text-lg font-bold"><span className="grad-text">OFD</span> Statistics</div>
-          <div className="rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs tracking-widest text-brand2">{CHAPTERS[cur].toUpperCase()}</div>
+          <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] tracking-widest sm:px-4 sm:text-xs text-brand2">{CHAPTERS[cur].toUpperCase()}</div>
         </div>
       </nav>
 
-      <header id="hero" onScroll={sync} className="mx-auto grid h-screen max-w-7xl items-center gap-6 overflow-y-auto px-5 pb-8 pt-20 lg:grid-cols-2">
+      <header id="hero" onScroll={sync} className="mx-auto grid h-dvh max-w-7xl content-start items-center gap-6 overflow-y-auto px-4 pb-28 pt-20 sm:px-5 lg:grid-cols-2 lg:content-center lg:pb-8">
         <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
           <div className="mb-4 inline-block rounded-full border border-brand/40 bg-brand/10 px-4 py-1 text-xs tracking-widest text-brand2">A RESEARCH STUDY ON QUANTITATIVE METHODS</div>
-          <h1 className="font-display text-5xl font-bold leading-tight md:text-7xl">Customer Behavior & Satisfaction in <span className="grad-text">Online Food Delivery</span></h1>
+          <h1 className="font-display text-4xl font-bold leading-tight sm:text-5xl md:text-7xl">Customer Behavior & Satisfaction in <span className="grad-text">Online Food Delivery</span></h1>
           <p className="mt-6 max-w-xl text-slate-400">In fulfillment of the requirements in MCO. Statistical analysis of {N} respondents and {Object.keys(labels).length} variables — Methodology, Presentation & Analysis of Data, and Interpretation.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#ch3" className="rounded-full bg-gradient-to-r from-brand to-brand2 px-6 py-3 font-semibold text-black shadow-lg shadow-brand/30 transition hover:scale-105">Start with Chapter III</a>
@@ -96,7 +96,7 @@ export default function App() {
             <div className="mt-2">Presented to: Maria Lina Ero, BSIT Lecturer · 2026</div>
           </div>
         </motion.div>
-        <div className="h-[420px] lg:h-[600px]">
+        <div className="h-[320px] sm:h-[420px] lg:h-[600px]">
           <HeroScene data={[{ value: yes.count, color: '#ff7a1a' }, { value: out[1].count, color: '#38bdf8' }]} />
         </div>
       </header>
@@ -112,14 +112,14 @@ export default function App() {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Card title="Variables Collected" note="Level of measurement determines the statistical tool used.">
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto"><table className="w-full min-w-[420px] text-sm">
               <thead><tr className="text-left text-xs uppercase tracking-wider text-slate-500"><th className="py-1">Variable</th><th>Type</th><th>Values</th></tr></thead>
               <tbody>
                 {variables.map(([k, t, v]) => (
                   <tr key={k} className="border-t border-white/5"><td className="py-1.5 font-medium text-brand2">{labels[k]}</td><td>{t}</td><td className="text-slate-400">{v}</td></tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           </Card>
           <Card title="Statistical Treatment" note="Tools applied to answer the Statement of the Problem.">
             <ul className="space-y-3 text-sm text-slate-300">
@@ -217,7 +217,7 @@ export default function App() {
 
         <h3 className="font-display pt-6 text-2xl font-bold">4.5 Reorder Intent by Customer Type (3D)</h3>
         <Card title="Yes-rate and Positive-feedback rate by segment" note="Move your mouse over the chart to rotate it. Values are percentages within each customer type.">
-          <InView className="h-[420px]">
+          <InView className="h-[320px] sm:h-[420px]">
             <Bars3D cats={yesByType.map((d) => `${d.name} (n=${d.n})`)} unit="%" series={[{ name: 'Will reorder', color: '#ff7a1a', values: yesByType.map((d) => d.rate) }, { name: 'Positive feedback', color: '#38bdf8', values: posByType.map((d) => d.rate) }]} />
           </InView>
           <div className="mt-2 flex gap-5 text-sm"><span><i className="mr-2 inline-block h-3 w-3 rounded bg-brand" />Will reorder</span><span><i className="mr-2 inline-block h-3 w-3 rounded bg-sky" />Positive feedback</span></div>

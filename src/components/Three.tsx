@@ -21,6 +21,7 @@ function useScene(build: (s: { scene: THREE.Scene; camera: THREE.PerspectiveCame
       const { clientWidth: w, clientHeight: h } = el
       renderer.setSize(w, h)
       camera.aspect = w / h
+      camera.zoom = Math.min(1, camera.aspect / 1.4)
       camera.updateProjectionMatrix()
     }
     resize()
@@ -111,7 +112,7 @@ export function HeroScene({ data }: { data: { value: number; color: string }[] }
       })
     })
   })
-  return <div ref={ref} className="h-full w-full" />
+  return <div ref={ref} className="h-full w-full [touch-action:pan-y]" />
 }
 
 export interface Series { name: string; color: string; values: number[] }
@@ -157,5 +158,5 @@ export function Bars3D({ cats, series, unit = '' }: { cats: string[]; series: Se
       })
     })
   }, [cats.join(), JSON.stringify(series)])
-  return <div ref={ref} className="h-full w-full " />
+  return <div ref={ref} className="h-full w-full [touch-action:pan-y]" />
 }
