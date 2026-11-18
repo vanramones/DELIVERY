@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { Bars3D, Pie3D } from './Three'
+import Expandable from './Expandable'
 import { type Cross, type Freq, fmtP, labels, strength } from '../data/stats'
 
 export const COLORS = ['#ff7a1a', '#38bdf8', '#34d399', '#a78bfa', '#fb7185', '#fbbf24']
@@ -61,7 +62,7 @@ export function Donut({ data, center }: { data: Freq[]; center?: string }) {
   return (
     <div>
       <InView className="h-[280px]">
-        <Pie3D data={data.map((d) => ({ name: d.name, value: d.count, pct: d.pct }))} colors={COLORS} center={center ?? String(data.reduce((a, b) => a + b.count, 0))} />
+        <Expandable height={280} render={(h) => <Pie3D height={h} data={data.map((d) => ({ name: d.name, value: d.count, pct: d.pct }))} colors={COLORS} center={center ?? String(data.reduce((a, b) => a + b.count, 0))} />} />
       </InView>
       <FreqTable data={data} />
     </div>
@@ -91,7 +92,7 @@ export function HBars({ data }: { data: Freq[] }) {
   return (
     <div>
       <InView className="h-[340px]">
-        <Bars3D cats={data.map((d) => d.name)} series={[{ name: 'Respondents', color: COLORS[0], values: data.map((d) => d.count) }]} colors={COLORS} height={340} />
+        <Expandable height={340} render={(h) => <Bars3D cats={data.map((d) => d.name)} series={[{ name: 'Respondents', color: COLORS[0], values: data.map((d) => d.count) }]} colors={COLORS} height={h} />} />
       </InView>
       <FreqTable data={data} />
     </div>
@@ -102,7 +103,7 @@ export function Stacked({ c, height = 340 }: { c: Cross; height?: number }) {
   const series = c.colCats.map((k, j) => ({ name: k, color: j === 0 ? '#34d399' : '#fb7185', values: c.rowCats.map((_, i) => +((c.table[i][j] / c.rowTotals[i]) * 100).toFixed(1)) }))
   return (
     <InView className="mb-2" style={{ height: height + 28 }}>
-      <Bars3D cats={c.rowCats} series={series} unit="%" stacked height={height} />
+      <Expandable height={height} render={(h) => <Bars3D cats={c.rowCats} series={series} unit="%" stacked height={h} />} />
     </InView>
   )
 }

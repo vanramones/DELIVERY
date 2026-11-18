@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import Expandable from './components/Expandable'
 import CustomCursor from './components/CustomCursor'
 import ChapterNext, { CHAPTERS } from './components/ChapterNext'
 import { Bars3D, HeroScene } from './components/Three'
@@ -180,7 +181,7 @@ export default function App() {
         <div className="grid gap-6 lg:grid-cols-3">
           <Card title="Age Distribution" className="lg:col-span-2">
             <InView className="h-[360px]">
-              <Bars3D cats={ageStats.distribution.map((d) => d.age)} series={[{ name: 'Respondents', color: '#38bdf8', values: ageStats.distribution.map((d) => d.count) }]} colors={ageStats.distribution.map((d) => (d.age === String(ageStats.mode) ? '#ff7a1a' : '#38bdf8'))} height={360} />
+              <Expandable height={360} render={(h) => <Bars3D cats={ageStats.distribution.map((d) => d.age)} series={[{ name: 'Respondents', color: '#38bdf8', values: ageStats.distribution.map((d) => d.count) }]} colors={ageStats.distribution.map((d) => (d.age === String(ageStats.mode) ? '#ff7a1a' : '#38bdf8'))} height={h} />} />
             </InView>
           </Card>
           <Card title="Age Groups">
@@ -222,7 +223,7 @@ export default function App() {
         <h3 className="font-display pt-6 text-2xl font-bold">4.5 Reorder Intent by Customer Type (3D)</h3>
         <Card title="Yes-rate and Positive-feedback rate by segment" note="All charts are 3D — move your mouse over a chart to rotate it. Values are percentages within each customer type.">
           <InView className="h-[410px]">
-            <Bars3D cats={yesByType.map((d) => `${d.name} (n=${d.n})`)} unit="%" series={[{ name: 'Will reorder', color: '#ff7a1a', values: yesByType.map((d) => d.rate) }, { name: 'Positive feedback', color: '#38bdf8', values: posByType.map((d) => d.rate) }]} height={380} />
+            <Expandable height={380} render={(h) => <Bars3D cats={yesByType.map((d) => `${d.name} (n=${d.n})`)} unit="%" series={[{ name: 'Will reorder', color: '#ff7a1a', values: yesByType.map((d) => d.rate) }, { name: 'Positive feedback', color: '#38bdf8', values: posByType.map((d) => d.rate) }]} height={h} />} />
           </InView>
         </Card>
         <div className="grid gap-6 lg:grid-cols-2">

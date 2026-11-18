@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 
-function useScene(build: (s: { scene: THREE.Scene; camera: THREE.PerspectiveCamera; tick: (fn: (t: number, m: { x: number; y: number }) => void) => void }) => void, deps: unknown[] = []) {
+function useScene(build: (s: { scene: THREE.Scene; camera: THREE.PerspectiveCamera; tick: (fn: (t: number, m: { x: number; y: number; ry: number; rx: number }) => void) => void }) => void, deps: unknown[] = []) {
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const el = ref.current!
@@ -10,8 +10,9 @@ function useScene(build: (s: { scene: THREE.Scene; camera: THREE.PerspectiveCame
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
     el.appendChild(renderer.domElement)
-    const fns: ((t: number, m: { x: number; y: number }) => void)[] = []
-    const mouse = { x: 0, y: 0 }
+    const fns: ((t: number, m: { x: number; y: number; ry: number; rx: number }) => void)[] = []
+    const mouse = { x: 0, y: 0, ry: 0, rx: 0 }
+    let drag = false, lx = 0, ly = 0
     scene.add(new THREE.AmbientLight(0xffffff, 1.3))
     const dl = new THREE.DirectionalLight(0xffffff, 2.6)
     dl.position.set(5, 8, 6)
@@ -34,6 +35,12 @@ function useScene(build: (s: { scene: THREE.Scene; camera: THREE.PerspectiveCame
       mouse.y = ((e.clientY - r.top) / r.height - 0.5) * 2
     }
     el.addEventListener('pointermove', move)
+    const down = (e: PointerEvent) => { drag = true; lx = e.clientX; ly = e.clientY }
+    const dmove = (e: PointerEvent) => { if (!drag) return; mouse.ry += (e.clientX - lx) * 0.01; mouse.rx = Math.max(-0.8, Math.min(0.8, mouse.rx + (e.clientY - ly) * 0.006)); lx = e.clientX; ly = e.clientY }
+    const up = () => (drag = false)
+    el.addEventListener('pointerdown', down)
+    window.addEventListener('pointermove', dmove)
+    window.addEventListener('pointerup', up)
     let raf = 0, t0 = -1
     const loop = (ms: number) => {
       if (t0 < 0) t0 = ms
@@ -46,6 +53,9 @@ function useScene(build: (s: { scene: THREE.Scene; camera: THREE.PerspectiveCame
       cancelAnimationFrame(raf)
       ro.disconnect()
       el.removeEventListener('pointermove', move)
+      el.removeEventListener('pointerdown', down)
+      window.removeEventListener('pointermove', dmove)
+      window.removeEventListener('pointerup', up)
       scene.traverse((o) => {
         const m = o as THREE.Mesh
         m.geometry?.dispose()
@@ -174,8 +184,8 @@ export function Bars3D({ cats, series, unit = '', stacked = false, colors, heigh
       })
     })
     tick((t, m) => {
-      g.rotation.y = Math.sin(t * 0.35) * 0.22 + m.x * 0.5
-      g.rotation.x = m.y * 0.1
+      g.rotation.y = Math.sin(t * 0.35) * 0.22 + m.x * 0.5 + m.ry
+      g.rotation.x = m.y * 0.1 + m.rx
       items.forEach((it) => {
         const k = Math.min(Math.max((t - it.delay) / 1.1, 0), 1)
         const e = 1 - Math.pow(1 - k, 3)
@@ -237,8 +247,8 @@ export function Pie3D({ data, colors, center, height = 280 }: { data: { name: st
       g.add(c)
     }
     tick((t, m) => {
-      g.rotation.y = t * 0.3 + m.x * 0.6
-      g.rotation.x = m.y * 0.15
+      g.rotation.y = t * 0.3 + m.x * 0.6 + m.ry
+      g.rotation.x = m.y * 0.15 + m.rx
       const e = 1 - Math.pow(1 - Math.min(t / 1.1, 1), 3)
       slices.forEach((s, i) => {
         const k = Math.min(Math.max((t - i * 0.12) / 0.9, 0), 1)
