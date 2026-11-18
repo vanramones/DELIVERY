@@ -81,7 +81,7 @@ export default function App() {
         </div>
       </nav>
 
-      <header id="hero" onScroll={sync} className="mx-auto grid h-dvh max-w-7xl content-start items-center gap-6 overflow-y-auto px-4 pb-28 pt-20 sm:px-5 lg:grid-cols-2 lg:content-center lg:pb-8">
+      <header id="hero" onScroll={sync} className="mx-auto grid h-dvh max-w-7xl content-start items-center gap-6 overflow-y-auto pb-16 pl-4 pr-14 pt-20 sm:pl-5 md:pr-20 lg:grid-cols-2 lg:content-center lg:pb-8">
         <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
           <div className="mb-4 inline-block rounded-full border border-brand/40 bg-brand/10 px-4 py-1 text-xs tracking-widest text-brand2">A RESEARCH STUDY ON QUANTITATIVE METHODS</div>
           <h1 className="font-display text-4xl font-bold leading-tight sm:text-5xl md:text-7xl">Customer Behavior & Satisfaction in <span className="grad-text">Online Food Delivery</span></h1>

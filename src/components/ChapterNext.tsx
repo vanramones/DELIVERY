@@ -28,7 +28,7 @@ export default function ChapterNext({ cur }: { cur: number }) {
             animate={{ x: [0, 8, 0] }}
             transition={{ x: { repeat: Infinity, duration: 1.6, ease: 'easeInOut' } }}
             aria-label={`Go to ${CHAPTERS[cur + 1]}`}
-            className={`fixed bottom-5 right-4 z-40 flex h-12 w-12 items-center md:bottom-auto md:right-5 md:top-1/2 md:h-14 md:w-14 md:-translate-y-1/2 justify-center rounded-full bg-gradient-to-b from-brand to-brand2 text-black shadow-lg shadow-brand/40 ${loading ? 'opacity-40' : ''}`}
+            className={`fixed right-2 top-1/2 z-40 flex h-11 w-11 -translate-y-1/2 items-center md:right-5 md:h-14 md:w-14 justify-center rounded-full bg-gradient-to-b from-brand to-brand2 text-black shadow-lg shadow-brand/40 ${loading ? 'opacity-40' : ''}`}
           >
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 5l7 7-7 7" />

@@ -7,7 +7,7 @@ export const COLORS = ['#ff7a1a', '#38bdf8', '#34d399', '#a78bfa', '#fb7185', '#
 
 export function Section({ id, chapter, title, sub, children, onScroll }: { id: string; chapter: string; title: string; sub: string; children: ReactNode; onScroll?: React.UIEventHandler<HTMLElement> }) {
   return (
-    <section id={id} onScroll={onScroll} className="mx-auto h-dvh max-w-7xl overflow-y-auto px-4 pb-28 pt-20 sm:px-5 md:pr-24 md:pb-20">
+    <section id={id} onScroll={onScroll} className="mx-auto h-dvh max-w-7xl overflow-y-auto pb-16 pl-4 pr-14 pt-20 sm:pl-5 md:pr-24 md:pb-20">
       <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
         <div className="font-display text-sm tracking-[0.3em] text-brand">{chapter}</div>
         <h2 className="font-display mt-2 text-3xl font-bold sm:text-4xl md:text-5xl">{title}</h2>
