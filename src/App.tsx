@@ -77,7 +77,12 @@ export default function App() {
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/5 bg-ink/70 backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
           <div className="font-display text-lg font-bold"><span className="grad-text">OFD</span> Statistics</div>
-          <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] tracking-widest sm:px-4 sm:text-xs text-brand2">{CHAPTERS[cur].toUpperCase()}</div>
+          <div className="flex items-center gap-2">
+            {cur > 0 && <div className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] tracking-widest text-brand2 sm:block sm:text-xs">{CHAPTERS[cur].toUpperCase()}</div>}
+            <button onClick={() => window.dispatchEvent(new CustomEvent('ofd-go', { detail: 0 }))} disabled={cur === 0} className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand to-brand2 px-4 py-1.5 text-xs font-bold text-black transition enabled:hover:scale-105 disabled:opacity-60">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" /></svg>HOME
+            </button>
+          </div>
         </div>
       </nav>
 

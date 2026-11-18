@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const ids = ['hero', 'ch3', 'ch4', 'ch5']
@@ -6,15 +6,23 @@ export const CHAPTERS = ['Home', 'Chapter III', 'Chapter IV', 'Chapter V']
 
 export default function ChapterNext({ cur }: { cur: number }) {
   const [loading, setLoading] = useState(false)
+  const [target, setTarget] = useState(0)
   const last = cur === ids.length - 1
-  const go = () => {
-    if (loading || last) return
+  const goTo = (target: number) => {
+    if (loading || target === cur) return
+    setTarget(target)
     setLoading(true)
     setTimeout(() => {
-      document.getElementById(ids[cur + 1])!.scrollIntoView()
+      document.getElementById(ids[target])!.scrollIntoView()
       setLoading(false)
     }, 4000)
   }
+  const go = () => !last && goTo(cur + 1)
+  useEffect(() => {
+    const h = (e: Event) => goTo((e as CustomEvent<number>).detail)
+    window.addEventListener('ofd-go', h)
+    return () => window.removeEventListener('ofd-go', h)
+  })
 
   return (
     <>
@@ -43,7 +51,7 @@ export default function ChapterNext({ cur }: { cur: number }) {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(255,122,26,.25),transparent_55%)]" />
             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.4, ease: 'linear' }} className="relative mb-8 h-16 w-16 rounded-full border-4 sm:h-20 sm:w-20 border-white/10 border-t-brand" />
             <h2 className="font-display relative px-4 text-center text-2xl font-bold tracking-wide sm:text-3xl md:text-5xl"><span className="grad-text">Online Food Delivery</span></h2>
-            <p className="relative mt-3 text-sm tracking-widest text-slate-400">LOADING {CHAPTERS[cur + 1].toUpperCase()}…</p>
+            <p className="relative mt-3 text-sm tracking-widest text-slate-400">LOADING {CHAPTERS[target].toUpperCase()}…</p>
             <div className="relative mt-8 h-1.5 w-56 sm:w-64 overflow-hidden rounded-full bg-white/10">
               <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 4, ease: 'linear' }} className="h-full bg-gradient-to-r from-brand to-brand2" />
             </div>
