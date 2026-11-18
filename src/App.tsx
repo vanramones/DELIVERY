@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import ChapterNext from './components/ChapterNext'
 import { Bars3D, HeroScene } from './components/Three'
 import { Card, COLORS, CrossTable, Donut, HBars, InView, Insight, Section, Stacked, Stat } from './components/ui'
 import { N, ageStats, avgAgeBy, cross, fmtP, freq, labels, rows, strength, tests, yesRate, type CatKey } from './data/stats'
@@ -30,8 +31,6 @@ const variables: [CatKey | 'age', string, string][] = [
   ['output', 'Binary', 'Will continue ordering? Yes / No'],
   ['feedback', 'Binary', 'Positive / Negative'],
 ]
-
-const nav = [['hero', 'Home'], ['ch3', 'Chapter III'], ['ch4', 'Chapter IV'], ['ch5', 'Chapter V']]
 
 function SigTable({ target, list }: { target: string; list: ReturnType<typeof tests> }) {
   return (
@@ -66,10 +65,10 @@ export default function App() {
   return (
     <div className="relative overflow-x-hidden">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_15%_10%,rgba(255,122,26,.18),transparent_40%),radial-gradient(circle_at_85%_30%,rgba(56,189,248,.14),transparent_40%)]" />
+      <ChapterNext />
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/5 bg-ink/70 backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
           <div className="font-display text-lg font-bold"><span className="grad-text">OFD</span> Statistics</div>
-          <div className="flex gap-1 text-sm">{nav.map(([id, t]) => <a key={id} href={'#' + id} className="rounded-full px-4 py-1.5 text-slate-300 transition hover:bg-white/10 hover:text-white">{t}</a>)}</div>
         </div>
       </nav>
 
