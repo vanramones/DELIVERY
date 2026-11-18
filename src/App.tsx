@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import CustomCursor from './components/CustomCursor'
 import ChapterNext, { CHAPTERS } from './components/ChapterNext'
 import { Bars3D, HeroScene } from './components/Three'
 import { Card, COLORS, CrossTable, Donut, HBars, InView, Insight, Section, Stacked, Stat } from './components/ui'
@@ -74,8 +75,13 @@ export default function App() {
   return (
     <div onScroll={sync} className="relative h-dvh overflow-hidden">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_15%_10%,rgba(255,122,26,.18),transparent_40%),radial-gradient(circle_at_85%_30%,rgba(56,189,248,.14),transparent_40%)]" />
+      <CustomCursor />
+      <div className="blob -left-24 top-10 h-96 w-96 bg-brand" />
+      <div className="blob -right-24 top-1/2 h-96 w-96 bg-sky [animation-delay:-6s]" />
+      <div className="bg-grid pointer-events-none fixed inset-0 -z-10" />
       <ChapterNext cur={cur} />
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/5 bg-ink/70 backdrop-blur-lg">
+      <nav className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-ink/60 shadow-lg shadow-black/30 backdrop-blur-xl">
+        <div className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-brand to-brand2 transition-all duration-700" style={{ width: (cur / 3) * 100 + "%" }} />
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
           <div className="font-display text-lg font-bold"><span className="grad-text">OFD</span> Statistics</div>
           <div className="flex items-center gap-2">

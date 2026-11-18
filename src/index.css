@@ -16,4 +16,23 @@ html { scroll-behavior: smooth; }
 body { background: var(--color-ink); color: #e5e9f5; font-family: var(--font-sans); margin: 0; }
 .glass { background: linear-gradient(145deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.09); backdrop-filter: blur(14px); border-radius: 1.25rem; }
 .grad-text { background: linear-gradient(90deg, #ff7a1a, #ffb347 60%, #fde68a); -webkit-background-clip: text; background-clip: text; color: transparent; }
-::-webkit-scrollbar { width: 10px; } ::-webkit-scrollbar-thumb { background: #232b45; border-radius: 8px; }
+
+.has-cursor, .has-cursor * { cursor: none !important; }
+.cursor-dot, .cursor-ring { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; will-change: transform; }
+.cursor-dot { width: 8px; height: 8px; border-radius: 50%; background: #ffb347; box-shadow: 0 0 14px 3px rgba(255,122,26,.8); transition: scale .15s; }
+.cursor-ring { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid rgba(255,179,71,.65); background: radial-gradient(circle, rgba(255,122,26,.08), transparent 70%); transition: border-color .2s, background .2s; }
+.cursor-ring[data-hover="1"] { border-color: #ff7a1a; background: rgba(255,122,26,.18); backdrop-filter: blur(1px); }
+@media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } }
+
+.bg-grid { background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 44px 44px; mask-image: radial-gradient(circle at 50% 30%, #000 20%, transparent 75%); }
+.blob { position: fixed; border-radius: 50%; filter: blur(90px); opacity: .35; pointer-events: none; z-index: -10; animation: float 14s ease-in-out infinite; }
+@keyframes float { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(40px,-50px) scale(1.15); } }
+.glass { transition: border-color .3s, box-shadow .3s, transform .3s; }
+.glass:hover { border-color: rgba(255,122,26,.35); box-shadow: 0 10px 40px -12px rgba(255,122,26,.25); }
+.arrow-pulse::before, .arrow-pulse::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(255,179,71,.7); animation: ping 2s cubic-bezier(0,0,.2,1) infinite; }
+.arrow-pulse::after { animation-delay: 1s; }
+@keyframes ping { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(1.9); opacity: 0; } }
+h2.font-display::after { content: ""; display: block; width: 72px; height: 4px; margin-top: 14px; border-radius: 4px; background: linear-gradient(90deg, #ff7a1a, #ffb347); }
+
+html, body, section, header, div { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; width: 0; height: 0; }

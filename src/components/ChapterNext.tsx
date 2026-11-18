@@ -36,11 +36,9 @@ export default function ChapterNext({ cur }: { cur: number }) {
             animate={{ x: [0, 8, 0] }}
             transition={{ x: { repeat: Infinity, duration: 1.6, ease: 'easeInOut' } }}
             aria-label={`Go to ${CHAPTERS[cur + 1]}`}
-            className={`fixed right-2 top-1/2 z-40 flex h-11 w-11 -translate-y-1/2 items-center md:right-5 md:h-14 md:w-14 justify-center rounded-full bg-gradient-to-b from-brand to-brand2 text-black shadow-lg shadow-brand/40 ${loading ? 'opacity-40' : ''}`}
+            className={`arrow-pulse fixed right-2 top-1/2 z-40 flex h-11 w-11 -translate-y-1/2 items-center md:right-5 md:h-14 md:w-14 justify-center rounded-full bg-gradient-to-b from-brand to-brand2 text-black shadow-[0_0_28px_6px_rgba(255,122,26,.55)] ring-2 ring-white/30 ${loading ? 'opacity-40' : ''}`}
           >
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 5l7 7-7 7" />
-            </svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l6 6-6 6" /><path d="M13 6l6 6-6 6" /></svg>
           </motion.button>
         )}
       </AnimatePresence>
